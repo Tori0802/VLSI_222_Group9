@@ -2,37 +2,37 @@ module bound_flasher(clk, rst_n, flick, led);
 
 // I/O
 
-	input wire 	clk;									// Clock
+	input wire 	clk;			// Clock
 	
-	input wire 	rst_n;								// Reset
+	input wire 	rst_n;			// Reset
 	
-	input wire 	flick;								// Special input
+	input wire 	flick;			// Special input
 	
-	output reg 	[15:0]led;							// Output
+	output reg 	[15:0]led;		// Output
 
 	
 // Variables
 
-	reg 			[1:0]led_operation;				// Status of Led operation
+	reg 		[1:0]led_operation;	// Status of Led operation
 	
-	reg			[3:0]current_state;				// Current state
+	reg		[3:0]current_state;	// Current state
+
+	reg		[3:0]next_state;	// Next state
 	
-	reg			[3:0]next_state;					// Next state
+	integer 	i; 			// Variable use in decode block
 	
-	integer 	  	i; 									// Variable use in decode block
-	
-	integer 	  	count; 								// Variable use to translate to output LED
+	integer 	count; 			// Variable use to translate to output LED
 
 	
-//	LED operation mode
+// LED operation mode
 
-	parameter 	UNCHANGED 		=  2'b00,
+	parameter 	UNCHANGED 	=  2'b00,
 	
-					UP			  		=  2'b01,
+			UP		=  2'b01,
 					
-					DOWN 		  		=  2'b10,
+			DOWN 		=  2'b10,
 					
-					KICKBACK	  	=  2'b11;
+			KICKBACK	=  2'b11;
 					
 	
 	
@@ -40,15 +40,15 @@ module bound_flasher(clk, rst_n, flick, led);
 
 	parameter	INIT         	=  4'b00_01,
 	
-					ON_0_TO_5 		=  4'b00_10,
+			ON_0_TO_5 	=  4'b00_10,
 				
-					OFF_TO_0  		=  4'b00_11,
+			OFF_TO_0  	=  4'b00_11,
 					
-					ON_0_TO_10  	=  4'b01_00,
+			ON_0_TO_10  	=  4'b01_00,
 					
-					OFF_TO_5  		=  4'b01_01,
+			OFF_TO_5  	=  4'b01_01,
 					
-					ON_5_TO_15 		=  4'b01_10;
+			ON_5_TO_15 	=  4'b01_10;
 
 
 	
@@ -62,35 +62,35 @@ begin
 
 	if(~rst_n) begin
  
- 		current_state <= INIT;	          				// Reset state
+ 		current_state <= INIT;	          		// Reset state
       
-    count <= -1;                        				// Reset "count"
+    	`	count <= -1;                        		// Reset "count"
      
-  end				
+  	end				
     
 	else begin
  
-		current_state <= next_state;						// Assign next state for next time
+		current_state <= next_state;			// Assign next state for next time
    
  		if (led_operation == UP) begin
 		
-			count <= count + 1;								// Increase "count"
+			count <= count + 1;			// Increase "count"
 			
 		end
 	
 		else if (led_operation == UNCHANGED) begin   
 			
-			count <= count;									// Keep "count" value
+			count <= count;				// Keep "count" value
 			
 		end
 		
-		else begin												// "KICKBACK" and "DOWN" operation
+		else begin					// "KICKBACK" and "DOWN" operation
 		
-			count <= count - 1;								// Decrease "count" 
+			count <= count - 1;			// Decrease "count" 
 		
 		end	
    
-  end
+  	end
 	
 end
 
@@ -110,25 +110,25 @@ begin
 	
 		if(count < 0 && flick) 		next_state = ON_0_TO_5;
    
-    else                         next_state = INIT;
+    		else                         	next_state = INIT;
 		
 	end
 	
 	
 	ON_0_TO_5: begin
 	
-		if(count == 5) 		      next_state = OFF_TO_0;
+		if(count == 5) 		      	next_state = OFF_TO_0;
    
-    else                         next_state = ON_0_TO_5;
+    		else                         	next_state = ON_0_TO_5;
 		
 	end
 	
 	
 	OFF_TO_0: begin
 	
-		if(count < 0) 			      next_state = ON_0_TO_10;
+		if(count < 0) 			next_state = ON_0_TO_10;
    
-    else                         next_state = OFF_TO_0;
+    		else                         	next_state = OFF_TO_0;
 	
 	end
 	
@@ -147,18 +147,18 @@ begin
 		
 			if(count == 10)         next_state = OFF_TO_5;	
 		
-			else 	                  next_state = ON_0_TO_10;
+			else 	                next_state = ON_0_TO_10;
       
-    end
+    		end
 		
 	end
 	
 	
 	OFF_TO_5: begin
 		
-		if(count < 5) 			      next_state = ON_5_TO_15;
+		if(count < 5) 			next_state = ON_5_TO_15;
    
-    else                         next_state = OFF_TO_5;
+  		else                         	next_state = OFF_TO_5;
 	
 	end
 	
@@ -177,14 +177,14 @@ begin
 		
 			if(count == 15)         next_state = INIT;	
 		
-			else 	                  next_state = ON_5_TO_15;
+			else 	                next_state = ON_5_TO_15;
    
-    end
+   		end
 		
 	end
  
 	
-	default: 							next_state = INIT;
+	default: 				next_state = INIT;
 	
 	
 	endcase
@@ -211,16 +211,16 @@ always @(current_state or count or flick) begin
 		
 		else if(flick) 			led_operation = UP;
 		
-		else 							led_operation = UNCHANGED;
+		else 				led_operation = UNCHANGED;
 			
 	end
 	
 	
 	ON_0_TO_5: begin
 	
-		if(count < 5) 				led_operation = UP;
+		if(count < 5) 			led_operation = UP;
 		
-		else 							led_operation = DOWN;
+		else 				led_operation = DOWN;
 	
 	end
 	
@@ -229,7 +229,7 @@ always @(current_state or count or flick) begin
 	
 		if(count >= 0) 			led_operation = DOWN;
 		
-		else 							led_operation = UP;
+		else 				led_operation = UP;
 	
 	end
 	
@@ -259,7 +259,7 @@ always @(current_state or count or flick) begin
 	
 		if(count >= 5) 			led_operation = DOWN;
 		
-		else 							led_operation = UP;
+		else 				led_operation = UP;
 	
 	end
 	
@@ -285,7 +285,7 @@ always @(current_state or count or flick) begin
 	end
 		
 		
-	default: 						led_operation = UNCHANGED;
+	default: 				led_operation = UNCHANGED;
 	
 	
 	endcase
@@ -302,11 +302,11 @@ always @(negedge clk)
 
 begin
    
-	  if(count <= -1) led <= 16'b0;					// Turn off all Leds
+	  if(count <= -1) led <= 16'b0;			// Turn off all Leds
 		
 	  else
 	
-		for(i = 0; i < 16; i = i + 1)					// Turn on leds from led[0] to led[count]
+		for(i = 0; i < 16; i = i + 1)		// Turn on leds from led[0] to led[count]
 		
 		begin
 		
