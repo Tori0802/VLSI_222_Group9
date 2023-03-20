@@ -1,0 +1,9 @@
+
+State Machine - |bound_flasher|current_state
+Name current_state.ON_5_TO_15 current_state.OFF_TO_5 current_state.ON_0_TO_10 current_state.OFF_TO_0 current_state.ON_0_TO_5 current_state.INIT 
+current_state.INIT 0 0 0 0 0 0 
+current_state.ON_0_TO_5 0 0 0 0 1 1 
+current_state.OFF_TO_0 0 0 0 1 0 1 
+current_state.ON_0_TO_10 0 0 1 0 0 1 
+current_state.OFF_TO_5 0 1 0 0 0 1 
+current_state.ON_5_TO_15 1 0 0 0 0 1 
