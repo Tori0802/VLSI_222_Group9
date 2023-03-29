@@ -40,8 +40,8 @@ module testbench();
 		#1; rst_n = 0;
      
 		#1; rst_n = 1; 
-       
-        flick = 1;
+   
+    		#1; flick = 1;
         		
 		$monitor("At %0t: clk = %b, flick = %b, led = %b", $time, clk, flick, led);
    
@@ -51,7 +51,7 @@ module testbench();
  
 		$display("Testcase 1: Normal_flow");
 		
-		#1; flick = 0;
+		#2; flick = 0;
 		
 		#150;
 		
